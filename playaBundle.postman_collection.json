@@ -1,0 +1,79 @@
+{
+	"info": {
+		"_postman_id": "2fd4b1c0-862f-4632-8383-cb16c4b4f42d",
+		"name": "playaBundle",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "19334777"
+	},
+	"item": [
+		{
+			"name": "http://localhost:8081/api/station/info",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/station/info",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"station",
+						"info"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/station/lastSensorValue",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/station/lastSensorValue",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"station",
+						"lastSensorValue"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "http://localhost:8081/api/user/image",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/api/user/image?ownerId=624344e863329a0dffb0fcfa",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"api",
+						"user",
+						"image"
+					],
+					"query": [
+						{
+							"key": "ownerId",
+							"value": "624344e863329a0dffb0fcfa"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
