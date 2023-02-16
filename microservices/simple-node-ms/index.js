@@ -64,15 +64,18 @@ app.get('/api/station/lastSensorValue', async (req, res) => {
         })
 });
 
-app.get('/api/user/image', (req, res) => {
-    axios.get('https://playa-libre.appspot.com/user/downloadMunImg/' + req.query.id)
-        .then(r => {
-            res.status(200).send(r.data)
-        })
-        .catch(err => {
-            console.log(err)
-            res.status(500).send(err)
-        })
+app.get('/api/user/image', async (req, res) => {
+    const url = 'https://playa-libre.appspot.com/user/downloadMunImg/' + req.query.ownerId
+    const response = await axios.get(url, { responseType: 'arraybuffer' }).catch(err => {
+        console.log(err)
+        res.status(500).send(err)
+    })
+    const buffer = Buffer.from(response.data, "utf-8")
+    res.contentType('image/png')
+    res.status(200).send(buffer)
+
+
+        
 });
 
 
