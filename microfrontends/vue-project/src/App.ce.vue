@@ -1,38 +1,313 @@
 <script setup>
-  import {getData} from "./integration/Integration";
+  import {getAPIUrl,addAuthorizationRequestConfig,addAuthorizationRequestConfigWithBlob} from "./integration/Integration";
 </script>
 <script>
+import axios from "axios";
   export default {
     props: ['config'],
     data() {
       return {
-        message: null,
-        date: null
+        title: null,
+        hum: "",
+        temp: "",
+        wind_speed: "",
+        wind_gust: "",
+        wind_dir: "",
+        rain: "",
+        uvi: 0,
+        crowdLevel: 0,
+        color:"",
+        date: "",
+        source: null
       }
+    },
+    mounted() {
+      /*
+        crowd_1": "0.0",
+    "hum": "76.0",
+    "temp": "16.3",
+    "wind_speed": "4.19",
+    "wind_gust": "5.18",
+    "wind_dir": "E",
+    "rain": "0.0",
+    "uva": "1.69",
+    "uvb": "-54.1",
+    "uvi": "-0.03",
+    "waste": "-"
+      */
+      axios.get(`http://localhost:8081/api/station/info`, addAuthorizationRequestConfig()).then((res) => {
+          console.log(res);
+          if (res) {
+            this.title = res.data.stationName;
+          }else{
+            console.log(error.message);
+          }
+      });
+
+      axios.get(`http://localhost:8081/api/station/lastSensorValue`, addAuthorizationRequestConfig()).then((res) => {
+        console.log(res);
+          if (res) {
+            this.temp = res.data.temp;
+            this.hum = res.data.hum;
+            this.wind_speed = res.data.wind_speed;
+            this.wind_gust = res.data.wind_gust;
+            this.wind_dir = res.data.wind_dir;
+            this.rain = res.data.rain;
+            this.uvi = this.convertUvVal(parseFloat(res.data.uvi));
+            this.temp = res.data.temp;
+            var crowd = res.data.crowd_1;
+            if(crowd < 0.5) {
+              this.color = "green-sem";
+            } else if(crowd >= 0.5 && crowd < 1.5) {
+              this.color = "yellow-sem";
+            } else {
+              this.color = "red-sem";
+            }
+
+            if(crowd <= 1.25 && crowd >= 0.75) {
+              this.crowdLevel = 50;
+            } else {
+              if(crowd > 1.75) {
+                this.crowdLevel = 100;
+              }
+              else{
+                if(crowd < 0.25){
+                  this.crowdLevel = 0;
+                }
+                else{
+                  if(crowd>=0.25 && crowd < 0.75){
+                    this.crowdLevel=25;
+                  }
+                  else{
+                    this.crowdLevel=75;
+                  }
+                }
+              }
+            }
+            
+            
+          }else{
+            console.log(error.message);
+          }
+      });
+
+      this.setImage();
+      
+
     },
     methods:{
       callTheApi: async function callTheApi() {
-        const { res, error } = await getData(this.config);
+        const { res, error } = await getInfo(this.config);
 
         if (res) {
-          this.message = res.data.greeting
-          this.date = new Date(res.data.timestamp).toLocaleString()
+          this.message = res.data.stationName
         }else{
           this.message = error.message
         }
-      }
+      },
+      async setImage() {
+        const blob = await axios.get('http://localhost:8081/api/user/image?ownerId=624344e863329a0dffb0fcfa', addAuthorizationRequestConfigWithBlob());
+        const theImage = window.URL.createObjectURL(blob.data);
+        var elemImage = document.getElementById("image");
+        this.source = theImage;
+      },
+      convertUvVal(uvVal) {
+        if(uvVal < 0.015){
+            return 0;
+        }else{
+            if(uvVal < 0.035) 
+                return 1;
+            else{
+                if(uvVal < 0.06) 
+                    return 2;
+                else{
+                    if(uvVal < 0.075) 
+                        return 3;
+                    else{
+                        if(uvVal < 0.1)
+                            return 4;
+                        else{
+                            if(uvVal < 0.125) 
+                                return 5;
+                            else{
+                                if(uvVal < 0.150)
+                                    return 6;
+                                else{
+                                    if(uvVal < 0.175) 
+                                        return 7;
+                                    else{
+                                        if(uvVal < 0.2)
+                                            return 8;
+                                        else{
+                                            if(uvVal < 0.225)
+                                                return 9;
+                                            else{
+                                                if(uvVal < 0.25)
+                                                    return 10;
+                                                else{
+                                                    if(uvVal < 0.275)
+                                                        return 11;
+                                                    else{
+                                                        return 12;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
   }
+}
 </script>
 
 <template>
-  <div>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
+  
+
+  <div class="sensor-card" style="min-width: 200px;">
+    <div class="container" style="margin-bottom: 20px;">
+      <div class="row">
+        <div class="col">
+          <h3 class="float-start">{{title}}</h3>
+        </div>
+        <div class="col">
+          <i :class="color" class="float-end"/>
+        </div>
+      </div>
+    </div>
+
+    <p class="text-center"> Crowdedness level: {{ crowdLevel }}% </p>
+
+    <div class="container">
+      <div class="row">
+
+        <div class="col">
+        <p class="text-black font-weight-bold" style="margin-bottom: 20px;"> Environment </p>
+        <div class="container">
+            <span style="font-size:22px; margin-right:12px;">
+              <img src="bootstrap-icons-1.10.3/thermometer-half.svg" alt="My Happy SVG" />
+            </span>
+            <span class="align-middle">
+            <p class="text-black font-weight-bold" style="display:inline; font-size:25px;"> {{temp}} </p>
+            </span>
+            <span class="align-bottom">
+            °C
+            </span>
+        </div>
+        <div class="container">
+            <span style="font-size:22px; margin-right:12px;">
+              <img src="bootstrap-icons-1.10.3/droplet.svg" alt="My Happy SVG" />
+            </span>
+            <span class="align-middle">
+            <p class="text-black" style="display:inline; font-size:25px;"> {{hum}} </p>
+            </span>
+            <span class="align-bottom">
+            %
+            </span>
+        </div>
+        <div class="container" style="margin-bottom:10px;">
+            <span style="font-size:22px; margin-right:12px;">
+              <img src="bootstrap-icons-1.10.3/cloud-rain.svg" alt="My Happy SVG" />
+            </span>
+            <span class="align-middle">
+            <p class="text-black" style="display:inline; font-size:25px;"> {{rain}}</p>
+            </span>
+            <span class="align-bottom">
+            mm
+            </span>
+        </div>
+
+        <div class="container" style="margin-bottom:10px;">
+            <span style="font-size:22px; margin-right:12px;">
+              <img src="bootstrap-icons-1.10.3/sun.svg" alt="My Happy SVG" />
+            </span>
+            <span class="align-middle">
+            <p class="text-black" style="display:inline; font-size:25px;"> {{uvi}}</p>
+            </span>
+            <span class="align-bottom">
+            
+            </span>
+        </div>
+      </div>
+
+      <div class="col">
+        <p class="text-black font-weight-bold" style="margin-bottom: 20px;"> Wind </p>
+        <div class="container">
+            <span style="font-size:22px; margin-right:12px;">
+              <img src="bootstrap-icons-1.10.3/speedometer.svg" alt="My Happy SVG" />
+            </span>
+            <span class="align-middle">
+            <p class="text-black font-weight-bold" style="display:inline; font-size:25px;"> {{wind_speed}} </p>
+            </span>
+            <span class="align-bottom">
+            knots
+            </span>
+        </div>
+        <div class="container">
+            <span style="font-size:22px; margin-right:12px;">
+              <img src="bootstrap-icons-1.10.3/compass.svg" alt="My Happy SVG" />
+            </span>
+            <span class="align-middle">
+            <p class="text-black" style="display:inline; font-size:25px;"> {{wind_dir}} </p>
+            </span>
+            <span class="align-bottom">
+            
+            </span>
+        </div>
+        <div class="container" style="margin-bottom:10px;">
+            <span style="font-size:22px; margin-right:12px;">
+              <img src="bootstrap-icons-1.10.3/wind.svg" alt="My Happy SVG" />
+            </span>
+            <span class="align-middle">
+            <p class="text-black" style="display:inline; font-size:25px;"> {{wind_gust}}</p>
+            </span>
+            <span class="align-bottom">
+              knots
+            </span>
+        </div>
+      </div>
+
+      </div>
+    </div>  
+
+<!--
+        <div style="bottom: 0; float: bottom; padding-bottom: 15px;">
+            <span> 
+              <img src="bootstrap-icons-1.10.3/arrow-clockwise.svg" alt="My Happy SVG" />
+            </span>
+            <span>
+              <p class="text-black" style="display: inline;">14:45:23</p>
+            </span>
+        </div>
+-->
+
+        <div class="container text-center" style="margin-top: 20px;">
+          <span style="margin-right: 10px;">
+            <img id="image" :src="source" width="30"/>
+          </span>
+          <span>
+            Città Metropolitana di Cagliari
+          </span>
+        </div>
+
+    </div>
+  
+  <!--  <div>
+    <img src="bootstrap-icons-1.10.3/0-circle.svg" alt="My Happy SVG" />
     <button @click="callTheApi()">call the api</button>
   </div>
   <div>
     <h1>{{message}}</h1>
     <p>{{date}}</p>
   </div>
+  -->
+
 </template>
 
 <style>
@@ -183,5 +458,65 @@
       display: none;
     }
   }
+
+  .sensor-card {
+  background-color: aliceblue;
+  border-radius: 10px;
+  padding: 15px;
+
+  }
+
+.svg.bi.bi-icon-sm {
+    height: 8px !important;
+    width: 8px !important;
+}
+
+.red-sem {
+    background: url('bootstrap-icons-1.10.3/stoplights-fill.svg');
+    background-repeat: no-repeat;
+    background-size: cover; /* stretch the background to cover the whole element */
+
+    /* 
+       still inline, but has block features
+       meaning height and width can be set
+    */
+    display: inline-block;
+    height: 26px;
+    width: 26px;
+    filter: invert(11%) sepia(100%) saturate(6260%) hue-rotate(10deg) brightness(103%) contrast(117%);
+    
+}
+
+.yellow-sem {
+    background: url('bootstrap-icons-1.10.3/stoplights-fill.svg');
+    background-repeat: no-repeat;
+    background-size: cover; /* stretch the background to cover the whole element */
+
+    /* 
+       still inline, but has block features
+       meaning height and width can be set
+    */
+    display: inline-block;
+    height: 26px;
+    width: 26px;
+    filter: invert(77%) sepia(92%) saturate(511%) hue-rotate(359deg) brightness(104%) contrast(105%);
+    
+}
+
+.green-sem {
+    background-color: green;
+    background: url('bootstrap-icons-1.10.3/stoplights-fill.svg');
+    background-repeat: no-repeat;
+    background-size: cover; /* stretch the background to cover the whole element */
+
+    /* 
+       still inline, but has block features
+       meaning height and width can be set
+    */
+    display: inline-block;
+    height: 26px;
+    width: 26px;
+    filter: invert(48%) sepia(79%) saturate(2476%) hue-rotate(86deg) brightness(118%) contrast(119%);
+}
 
 </style>
