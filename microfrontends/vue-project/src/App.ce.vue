@@ -18,27 +18,41 @@ import axios from "axios";
         crowdLevel: 0,
         color:"",
         date: "",
-        source: null
+        source: null,
+        city: "",
+        lang: navigator.language,
+        idLang: 0,
+        dict: [
+          {
+            "crowdLevel": "Crowdedness Level",
+            "env": "Environment",
+            "wind": "Wind",
+            "speed": "knots",
+            "uv": "UV Index",
+            "city": "Metropolitan city of"
+          },
+          {
+            "crowdLevel": "Affollamento al",
+            "env": "Ambiente",
+            "wind": "Vento",
+            "speed": "nodi",
+            "uv": "Indice UV",
+            "city": "Città Metropolitana di"
+          }
+        ]
       }
     },
     mounted() {
-      /*
-        crowd_1": "0.0",
-    "hum": "76.0",
-    "temp": "16.3",
-    "wind_speed": "4.19",
-    "wind_gust": "5.18",
-    "wind_dir": "E",
-    "rain": "0.0",
-    "uva": "1.69",
-    "uvb": "-54.1",
-    "uvi": "-0.03",
-    "waste": "-"
-      */
+      
+      if(this.lang.includes("it")) {
+        this.idLang = 1;
+      }
+
       axios.get(`http://localhost:8081/api/station/info`, addAuthorizationRequestConfig()).then((res) => {
           console.log(res);
           if (res) {
             this.title = res.data.stationName;
+            this.city = res.data.stationLocation;
           }else{
             console.log(error.message);
           }
@@ -182,16 +196,16 @@ import axios from "axios";
       </div>
     </div>
 
-    <p class="text-center"> Crowdedness level: {{ crowdLevel }}% </p>
+    <p class="text-center"> {{ dict[idLang]["crowdLevel"] }}: {{ crowdLevel }}% </p>
 
     <div class="container">
       <div class="row">
 
         <div class="col">
-        <p class="text-black font-weight-bold" style="margin-bottom: 20px;"> Environment </p>
+        <p class="text-black font-weight-bold" style="margin-bottom: 20px;"> {{ dict[idLang]["env"] }} </p>
         <div class="container">
             <span style="font-size:22px; margin-right:12px;">
-              <img src="bootstrap-icons-1.10.3/thermometer-half.svg" alt="My Happy SVG" />
+              <img src="bootstrap-icons-1.10.3/thermometer-half.svg" alt="" />
             </span>
             <span class="align-middle">
             <p class="text-black font-weight-bold" style="display:inline; font-size:25px;"> {{temp}} </p>
@@ -202,7 +216,7 @@ import axios from "axios";
         </div>
         <div class="container">
             <span style="font-size:22px; margin-right:12px;">
-              <img src="bootstrap-icons-1.10.3/droplet.svg" alt="My Happy SVG" />
+              <img src="bootstrap-icons-1.10.3/droplet.svg" alt="" />
             </span>
             <span class="align-middle">
             <p class="text-black" style="display:inline; font-size:25px;"> {{hum}} </p>
@@ -213,7 +227,7 @@ import axios from "axios";
         </div>
         <div class="container" style="margin-bottom:10px;">
             <span style="font-size:22px; margin-right:12px;">
-              <img src="bootstrap-icons-1.10.3/cloud-rain.svg" alt="My Happy SVG" />
+              <img src="bootstrap-icons-1.10.3/cloud-rain.svg" alt="" />
             </span>
             <span class="align-middle">
             <p class="text-black" style="display:inline; font-size:25px;"> {{rain}}</p>
@@ -225,33 +239,33 @@ import axios from "axios";
 
         <div class="container" style="margin-bottom:10px;">
             <span style="font-size:22px; margin-right:12px;">
-              <img src="bootstrap-icons-1.10.3/sun.svg" alt="My Happy SVG" />
+              <img src="bootstrap-icons-1.10.3/sun.svg" alt="" />
             </span>
             <span class="align-middle">
-            <p class="text-black" style="display:inline; font-size:25px;"> {{uvi}}</p>
+            <p class="text-black" style="display:inline; font-size:25px;"> {{uvi}} </p>
             </span>
             <span class="align-bottom">
-            
+               {{ dict[idLang]["uv"] }}
             </span>
         </div>
       </div>
 
       <div class="col">
-        <p class="text-black font-weight-bold" style="margin-bottom: 20px;"> Wind </p>
+        <p class="text-black font-weight-bold" style="margin-bottom: 20px;"> {{ dict[idLang]["wind"] }} </p>
         <div class="container">
             <span style="font-size:22px; margin-right:12px;">
-              <img src="bootstrap-icons-1.10.3/speedometer.svg" alt="My Happy SVG" />
+              <img src="bootstrap-icons-1.10.3/speedometer.svg" alt="" />
             </span>
             <span class="align-middle">
             <p class="text-black font-weight-bold" style="display:inline; font-size:25px;"> {{wind_speed}} </p>
             </span>
             <span class="align-bottom">
-            knots
+               {{ dict[idLang]["speed"] }}
             </span>
         </div>
         <div class="container">
             <span style="font-size:22px; margin-right:12px;">
-              <img src="bootstrap-icons-1.10.3/compass.svg" alt="My Happy SVG" />
+              <img src="bootstrap-icons-1.10.3/compass.svg" alt="" />
             </span>
             <span class="align-middle">
             <p class="text-black" style="display:inline; font-size:25px;"> {{wind_dir}} </p>
@@ -262,13 +276,13 @@ import axios from "axios";
         </div>
         <div class="container" style="margin-bottom:10px;">
             <span style="font-size:22px; margin-right:12px;">
-              <img src="bootstrap-icons-1.10.3/wind.svg" alt="My Happy SVG" />
+              <img src="bootstrap-icons-1.10.3/wind.svg" alt="" />
             </span>
             <span class="align-middle">
-            <p class="text-black" style="display:inline; font-size:25px;"> {{wind_gust}}</p>
+            <p class="text-black" style="display:inline; font-size:25px;"> {{wind_gust}} </p>
             </span>
             <span class="align-bottom">
-              knots
+               {{ dict[idLang]["speed"] }}
             </span>
         </div>
       </div>
@@ -276,37 +290,16 @@ import axios from "axios";
       </div>
     </div>  
 
-<!--
-        <div style="bottom: 0; float: bottom; padding-bottom: 15px;">
-            <span> 
-              <img src="bootstrap-icons-1.10.3/arrow-clockwise.svg" alt="My Happy SVG" />
-            </span>
-            <span>
-              <p class="text-black" style="display: inline;">14:45:23</p>
-            </span>
-        </div>
--->
-
         <div class="container text-center" style="margin-top: 20px;">
           <span style="margin-right: 10px;">
             <img id="image" :src="source" width="30"/>
           </span>
           <span>
-            Città Metropolitana di Cagliari
+            {{ dict[idLang]["city"] }} {{ city }}
           </span>
         </div>
 
     </div>
-  
-  <!--  <div>
-    <img src="bootstrap-icons-1.10.3/0-circle.svg" alt="My Happy SVG" />
-    <button @click="callTheApi()">call the api</button>
-  </div>
-  <div>
-    <h1>{{message}}</h1>
-    <p>{{date}}</p>
-  </div>
-  -->
 
 </template>
 
@@ -474,12 +467,7 @@ import axios from "axios";
 .red-sem {
     background: url('bootstrap-icons-1.10.3/stoplights-fill.svg');
     background-repeat: no-repeat;
-    background-size: cover; /* stretch the background to cover the whole element */
-
-    /* 
-       still inline, but has block features
-       meaning height and width can be set
-    */
+    background-size: cover;
     display: inline-block;
     height: 26px;
     width: 26px;
@@ -490,12 +478,7 @@ import axios from "axios";
 .yellow-sem {
     background: url('bootstrap-icons-1.10.3/stoplights-fill.svg');
     background-repeat: no-repeat;
-    background-size: cover; /* stretch the background to cover the whole element */
-
-    /* 
-       still inline, but has block features
-       meaning height and width can be set
-    */
+    background-size: cover;
     display: inline-block;
     height: 26px;
     width: 26px;
@@ -507,12 +490,7 @@ import axios from "axios";
     background-color: green;
     background: url('bootstrap-icons-1.10.3/stoplights-fill.svg');
     background-repeat: no-repeat;
-    background-size: cover; /* stretch the background to cover the whole element */
-
-    /* 
-       still inline, but has block features
-       meaning height and width can be set
-    */
+    background-size: cover;
     display: inline-block;
     height: 26px;
     width: 26px;
