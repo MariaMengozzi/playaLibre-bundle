@@ -2,6 +2,13 @@
   import {getAPIUrl,addAuthorizationRequestConfig,addAuthorizationRequestConfigWithBlob} from "./integration/Integration";
 </script>
 <script>
+import termometro from "bootstrap-icons/icons/thermometer-half.svg";
+import droplet from "bootstrap-icons/icons/droplet.svg";
+import cloudRain from "bootstrap-icons/icons/cloud-rain.svg";
+import sun from "bootstrap-icons/icons/sun.svg";
+import speedometer from "bootstrap-icons/icons/speedometer.svg";
+import compass from "bootstrap-icons/icons/compass.svg";
+import wind from "bootstrap-icons/icons/wind.svg";
 import axios from "axios";
   export default {
     props: ['config'],
@@ -21,6 +28,14 @@ import axios from "axios";
         source: null,
         city: "",
         lang: navigator.language,
+        termIcons: termometro,
+        dropletIcon: droplet,
+        cloud_rainIcon: cloudRain,
+        sunIcon: sun,
+        windIcon: wind,
+        compassIcon: compass,
+        speedometerIcon: speedometer,
+
         idLang: 0,
         dict: [
           {
@@ -182,7 +197,6 @@ import axios from "axios";
 
 <template>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-GLhlTQ8iRABdZLl6O3oVMWSktQOp6b7In1Zl3/Jr59b6EGGoI1aFkw7cmDA6j6gD" crossorigin="anonymous">
-  
 
   <div class="sensor-card" style="min-width: 200px;">
     <div class="container" style="margin-bottom: 20px;">
@@ -205,7 +219,7 @@ import axios from "axios";
         <p class="text-black font-weight-bold" style="margin-bottom: 20px;"> {{ dict[idLang]["env"] }} </p>
         <div class="container">
             <span style="font-size:22px; margin-right:12px;">
-              <img src="bootstrap-icons-1.10.3/thermometer-half.svg" alt="" />
+              <img :src="termIcons" alt="" />
             </span>
             <span class="align-middle">
             <p class="text-black font-weight-bold" style="display:inline; font-size:25px;"> {{temp}} </p>
@@ -216,7 +230,7 @@ import axios from "axios";
         </div>
         <div class="container">
             <span style="font-size:22px; margin-right:12px;">
-              <img src="bootstrap-icons-1.10.3/droplet.svg" alt="" />
+              <img :src="dropletIcon" alt="" />
             </span>
             <span class="align-middle">
             <p class="text-black" style="display:inline; font-size:25px;"> {{hum}} </p>
@@ -227,7 +241,7 @@ import axios from "axios";
         </div>
         <div class="container" style="margin-bottom:10px;">
             <span style="font-size:22px; margin-right:12px;">
-              <img src="bootstrap-icons-1.10.3/cloud-rain.svg" alt="" />
+              <img :src="cloud_rainIcon" alt="" />
             </span>
             <span class="align-middle">
             <p class="text-black" style="display:inline; font-size:25px;"> {{rain}}</p>
@@ -239,7 +253,7 @@ import axios from "axios";
 
         <div class="container" style="margin-bottom:10px;">
             <span style="font-size:22px; margin-right:12px;">
-              <img src="bootstrap-icons-1.10.3/sun.svg" alt="" />
+              <img :src="sunIcon" alt="" />
             </span>
             <span class="align-middle">
             <p class="text-black" style="display:inline; font-size:25px;"> {{uvi}} </p>
@@ -254,7 +268,7 @@ import axios from "axios";
         <p class="text-black font-weight-bold" style="margin-bottom: 20px;"> {{ dict[idLang]["wind"] }} </p>
         <div class="container">
             <span style="font-size:22px; margin-right:12px;">
-              <img src="bootstrap-icons-1.10.3/speedometer.svg" alt="" />
+              <img :src="speedometerIcon" alt="" />
             </span>
             <span class="align-middle">
             <p class="text-black font-weight-bold" style="display:inline; font-size:25px;"> {{wind_speed}} </p>
@@ -265,7 +279,7 @@ import axios from "axios";
         </div>
         <div class="container">
             <span style="font-size:22px; margin-right:12px;">
-              <img src="bootstrap-icons-1.10.3/compass.svg" alt="" />
+              <img :src="compassIcon" alt="" />
             </span>
             <span class="align-middle">
             <p class="text-black" style="display:inline; font-size:25px;"> {{wind_dir}} </p>
@@ -276,7 +290,7 @@ import axios from "axios";
         </div>
         <div class="container" style="margin-bottom:10px;">
             <span style="font-size:22px; margin-right:12px;">
-              <img src="bootstrap-icons-1.10.3/wind.svg" alt="" />
+              <img :src="windIcon" alt="" />
             </span>
             <span class="align-middle">
             <p class="text-black" style="display:inline; font-size:25px;"> {{wind_gust}} </p>
@@ -465,7 +479,7 @@ import axios from "axios";
 }
 
 .red-sem {
-    background: url('bootstrap-icons-1.10.3/stoplights-fill.svg');
+    background: url('stoplights-fill.svg');
     background-repeat: no-repeat;
     background-size: cover;
     display: inline-block;
@@ -476,7 +490,7 @@ import axios from "axios";
 }
 
 .yellow-sem {
-    background: url('bootstrap-icons-1.10.3/stoplights-fill.svg');
+    background: url('stoplights-fill.svg');
     background-repeat: no-repeat;
     background-size: cover;
     display: inline-block;
@@ -488,7 +502,7 @@ import axios from "axios";
 
 .green-sem {
     background-color: green;
-    background: url('bootstrap-icons-1.10.3/stoplights-fill.svg');
+    background: url('stoplights-fill.svg');
     background-repeat: no-repeat;
     background-size: cover;
     display: inline-block;
